@@ -3,17 +3,41 @@ package com.example;
 public class Game {
   public static final int BOARDSIZE = 10;
 
-  private int[][] board;
+  private Cell[][] board;
   private Ladder[] ladders;
   private Food[] foods;
   private Snake snake;
   private Dice dice;
 
   public Game() {
-    board = new int[BOARDSIZE][BOARDSIZE];
+
+    board = new Cell[BOARDSIZE][BOARDSIZE];
+    // initialize board with empty cells
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board.length; j++) {
+        board[i][j] = Cell.Empty;
+      }
+    }
+
     ladders = generateLadders();
+    // add ladders to board
+    for (Ladder ladder : ladders) {
+      board[ladder.startX][ladder.startY] = Cell.Ladder;
+      board[ladder.endX][ladder.endY] = Cell.Ladder;
+    }
+
     foods = generateFoods();
+    // add foods to board
+    for (Food food : foods) {
+      board[food.foodX][food.foodY] = Cell.Food;
+    }
+
     snake = new Snake();
+    // add snake to board
+    for (int i = 0; i < snake.valuesX.length; i++) {
+      board[snake.valuesX[i]][snake.valuesY[i]] = Cell.Snake;
+    }
+
     dice = new Dice();
   }
 
@@ -22,7 +46,7 @@ public class Game {
 
     foods[0] = new Food(2, 3);
     foods[1] = new Food(4, 5);
-    foods[2] = new Food(3, 10);
+    foods[2] = new Food(3, 9);
     foods[3] = new Food(6, 1);
 
     return foods;
@@ -37,11 +61,32 @@ public class Game {
     return ladders;
   }
 
+  private void printBoard() {
+    for (Cell[] row : board) {
+      for (Cell cell : row) {
+
+        if (cell == Cell.Snake) {
+          System.out.print("#");
+        } else if (cell == Cell.Ladder) {
+          System.out.print("^");
+        } else if (cell == Cell.Empty) {
+          System.out.print(".");
+        } else if (cell == Cell.Food) {
+          System.out.print("*");
+        }
+      }
+      System.out.println();
+    }
+  }
+
   public void play() {
     welcome();
 
     while (true) {
       dice.clear();
+
+      printBoard();
+
       dice.roll();
 
       if (dice.value == 6) {
@@ -49,12 +94,19 @@ public class Game {
       }
 
       if (canMoveForward()) {
+
+        for (int i = 0; i < snake.valuesX.length; i++) {
+          board[snake.valuesX[i]][snake.valuesY[i]] = Cell.Empty;
+        }
+
         snake.moveForward(dice.value);
+
+        for (int i = 0; i < snake.valuesX.length; i++) {
+          board[snake.valuesX[i]][snake.valuesY[i]] = Cell.Snake;
+        }
       }
 
-      if (canClimbLadder()) {
-        snake.climbLadder(1, 2);
-      }
+      climbLadder();
 
       if (reachedEnd()) {
         break;
@@ -69,11 +121,26 @@ public class Game {
   }
 
   private boolean reachedEnd() {
-    return false;
+    return (snake.getHeadX() == Game.BOARDSIZE - 1) && (snake.getHeadY() == Game.BOARDSIZE - 1);
   }
 
-  private boolean canClimbLadder() {
-    return true;
+  private void climbLadder() {
+    for (Ladder ladder : ladders) {
+      if (snake.getHeadX() == ladder.startX && snake.getHeadY() == ladder.startY) {
+
+        for (int i = 0; i < snake.valuesX.length; i++) {
+          board[snake.valuesX[i]][snake.valuesY[i]] = Cell.Empty;
+        }
+
+        snake.climbLadder(ladder.endX, ladder.endY);
+
+        for (int i = 0; i < snake.valuesX.length; i++) {
+          board[snake.valuesX[i]][snake.valuesY[i]] = Cell.Snake;
+        }
+
+        return;
+      }
+    }
   }
 
   private boolean canMoveForward() {

@@ -72,4 +72,12 @@ public class Snake {
     return new int[] { x, y };
   }
 
+  public int getHeadX() {
+    return valuesX[0];
+  }
+
+  public int getHeadY() {
+    return valuesY[0];
+  }
+
 }
