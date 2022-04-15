@@ -3,10 +3,12 @@ package com.example;
 public class Game {
   public static final int BOARDSIZE = 10;
 
+  private int tokenX; // row
+  private int tokenY; // col
+
   private Cell[][] board;
   private Ladder[] ladders;
-  private Food[] foods;
-  private Snake snake;
+  private Snake[] snakes;
   private Dice dice;
 
   public Game() {
@@ -22,40 +24,38 @@ public class Game {
     ladders = generateLadders();
     // add ladders to board
     for (Ladder ladder : ladders) {
-      board[ladder.startRowCoord][ladder.startColCoord] = Cell.Ladder;
-      board[ladder.endRowCoord][ladder.endColCoord] = Cell.Ladder;
+      board[ladder.bottomX][ladder.bottomY] = Cell.Ladder;
+      board[ladder.topX][ladder.topY] = Cell.Ladder;
     }
 
-    foods = generateFoods();
-    // add foods to board
-    for (Food food : foods) {
-      board[food.rowCoord][food.colCoord] = Cell.Food;
+    snakes = generateSnakes();
+    // add snakes to board
+    for (Snake snake : snakes) {
+      board[snake.headX][snake.headY] = Cell.Snake;
+      board[snake.tailX][snake.tailY] = Cell.Snake;
     }
 
-    snake = new Snake();
-    // add snake to board
-    for (int i = 0; i < snake.rowCoords.length; i++) {
-      board[snake.rowCoords[i]][snake.colCoords[i]] = Cell.Snake;
-    }
+    // add token to board
+    tokenX = BOARDSIZE - 1;
+    tokenY = 0;
+    board[tokenX][tokenY] = Cell.Token;
 
     dice = new Dice();
   }
 
-  private Food[] generateFoods() {
-    Food[] foods = new Food[4];
+  private Snake[] generateSnakes() {
+    Snake[] snakes = new Snake[2];
 
-    foods[0] = new Food(2, 3);
-    foods[1] = new Food(4, 5);
-    foods[2] = new Food(3, 9);
-    foods[3] = new Food(6, 1);
+    snakes[0] = new Snake(6, 2, 4, 4);
+    snakes[1] = new Snake(6, 1, 3, 6);
 
-    return foods;
+    return snakes;
   }
 
   private Ladder[] generateLadders() {
     Ladder[] ladders = new Ladder[2];
 
-    ladders[0] = new Ladder(2, 2, 4, 4);
+    ladders[0] = new Ladder(2, 2, 4, 5);
     ladders[1] = new Ladder(4, 1, 6, 6);
 
     return ladders;
@@ -67,15 +67,13 @@ public class Game {
 
         Cell cell = board[i][j];
 
-        if (cell == Cell.Snake && i == snake.getHeadX() && j == snake.getHeadY()) {
-          System.out.print(" = ");
-        } else if (cell == Cell.Snake) {
-          System.out.print(" - ");
+        if (cell == Cell.Snake) {
+          System.out.print(" x ");
         } else if (cell == Cell.Ladder) {
           System.out.print(" + ");
         } else if (cell == Cell.Empty) {
           System.out.print(" . ");
-        } else if (cell == Cell.Food) {
+        } else if (cell == Cell.Token) {
           System.out.print(" @ ");
         }
       }
@@ -101,59 +99,70 @@ public class Game {
         dice.roll();
       }
 
-      if (canMoveForward()) {
-
-        for (int i = 0; i < snake.rowCoords.length; i++) {
-          board[snake.rowCoords[i]][snake.colCoords[i]] = Cell.Empty;
-        }
-
-        snake.moveForward(dice.value);
-
-        for (int i = 0; i < snake.rowCoords.length; i++) {
-          board[snake.rowCoords[i]][snake.colCoords[i]] = Cell.Snake;
-        }
+      for (int i = 0; i < dice.value; i++) {
+        board[tokenX][tokenY] = Cell.Empty;
+        moveForward();
+        board[tokenX][tokenY] = Cell.Token;
       }
 
       climbLadder();
 
+      climbDownSnake();
+
       if (reachedEnd()) {
         break;
       }
-
     }
 
     congrats();
   }
 
-  private void congrats() {
-    System.out.println("*** Congrats! you won.");
-  }
-
-  private boolean reachedEnd() {
-    return (snake.getHeadX() == 0) && (snake.getHeadY() == 0);
+  private void moveForward() {
+    if (tokenX % 2 == 0) {
+      if (tokenY == 0) {
+        tokenX--;
+      } else {
+        tokenY--;
+      }
+    } else {
+      if (tokenY == Game.BOARDSIZE - 1) {
+        tokenX--;
+      } else {
+        tokenY++;
+      }
+    }
   }
 
   private void climbLadder() {
     for (Ladder ladder : ladders) {
-      if (snake.getHeadX() == ladder.startRowCoord && snake.getHeadY() == ladder.startColCoord) {
-
-        for (int i = 0; i < snake.rowCoords.length; i++) {
-          board[snake.rowCoords[i]][snake.colCoords[i]] = Cell.Empty;
-        }
-
-        snake.climbLadder(ladder.endRowCoord, ladder.endColCoord);
-
-        for (int i = 0; i < snake.rowCoords.length; i++) {
-          board[snake.rowCoords[i]][snake.colCoords[i]] = Cell.Snake;
-        }
-
+      if (tokenX == ladder.bottomX && tokenY == ladder.bottomY) {
+        board[tokenX][tokenY] = Cell.Empty;
+        tokenX = ladder.topX;
+        tokenY = ladder.topY;
+        board[tokenX][tokenY] = Cell.Ladder;
         return;
       }
     }
   }
 
-  private boolean canMoveForward() {
-    return true;
+  private void climbDownSnake() {
+    for (Snake snake : snakes) {
+      if (tokenX == snake.headX && tokenY == snake.headY) {
+        board[tokenX][tokenY] = Cell.Empty;
+        tokenX = snake.tailX;
+        tokenY = snake.tailY;
+        board[tokenX][tokenY] = Cell.Snake;
+        return;
+      }
+    }
+  }
+
+  private boolean reachedEnd() {
+    return (tokenX == 0) && (tokenY == 0);
+  }
+
+  private void congrats() {
+    System.out.println("*** Congrats! you won.");
   }
 
   public void welcome() {
