@@ -1,12 +1,12 @@
 package com.example;
 
 public class Food {
-  public int foodX;
-  public int foodY;
+  public int rowCoord;
+  public int colCoord;
 
   public Food(int x, int y) {
-    foodX = x;
-    foodY = y;
+    rowCoord = x;
+    colCoord = y;
   }
 
 }

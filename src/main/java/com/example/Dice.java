@@ -8,10 +8,12 @@ public class Dice {
   protected void roll() {
     Scanner in = new Scanner(System.in);
     System.out.println("Press Enter to roll the dice: ");
-    in.nextLine();
-    in.close();
+    int userInput = in.nextInt();
+    System.out.println(userInput);
 
     value = (int) (Math.random() * 6 + 1);
+    // System.out.println("dice value: " + String.valueOf(value));
+    value = userInput;
   }
 
   protected void clear() {

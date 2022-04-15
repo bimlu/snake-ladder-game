@@ -1,83 +1,83 @@
 package com.example;
 
 public class Snake {
-  protected int[] valuesX;
-  protected int[] valuesY;
+  protected int[] rowCoords;
+  protected int[] colCoords;
 
   public Snake() {
-    this.valuesX = new int[] { 2, 1, 0 };
-    this.valuesY = new int[] { 0, 0, 0 };
+    this.rowCoords = new int[] { Game.BOARDSIZE - 1, Game.BOARDSIZE - 1, Game.BOARDSIZE - 1 };
+    this.colCoords = new int[] { 2, 1, 0 };
   }
 
   void moveForward(int diceValue) {
     for (int i = 1; i <= diceValue; i++) {
 
-      for (int k = 0; k < valuesX.length; k++) {
+      for (int k = 0; k < rowCoords.length; k++) {
 
-        int[] nextCell = getNextCell(valuesX[k], valuesY[k]);
+        int[] nextCell = getNextCell(rowCoords[k], colCoords[k]);
 
-        valuesX[k] = nextCell[0];
-        valuesY[k] = nextCell[1];
+        rowCoords[k] = nextCell[0];
+        colCoords[k] = nextCell[1];
       }
     }
   }
 
   void climbLadder(int ladderEndX, int ladderEndY) {
-    valuesX[0] = ladderEndX;
-    valuesY[0] = ladderEndY;
+    rowCoords[0] = ladderEndX;
+    colCoords[0] = ladderEndY;
 
-    for (int k = 1; k < valuesX.length; k++) {
-      int[] newCell = getPreviousCell(valuesX[k - 1], valuesY[k - 1]);
+    for (int k = 1; k < rowCoords.length; k++) {
+      int[] newCell = getPreviousCell(rowCoords[k - 1], colCoords[k - 1]);
 
-      valuesX[k] = newCell[0];
-      valuesY[k] = newCell[1];
+      rowCoords[k] = newCell[0];
+      colCoords[k] = newCell[1];
     }
   }
 
-  private int[] getNextCell(int x, int y) {
+  private int[] getNextCell(int row, int col) {
 
-    if (y % 2 == 0) {
-      if (x == Game.BOARDSIZE - 1) {
-        y++;
+    if (row % 2 != 0) {
+      if (col == Game.BOARDSIZE - 1) {
+        row--;
       } else {
-        x++;
+        col++;
       }
     } else {
-      if (x == 0) {
-        y++;
+      if (col == 0) {
+        row--;
       } else {
-        x--;
+        col--;
       }
     }
 
-    return new int[] { x, y };
+    return new int[] { row, col };
   }
 
-  private int[] getPreviousCell(int x, int y) {
+  private int[] getPreviousCell(int row, int col) {
 
-    if (y % 2 == 0) {
-      if (x == 0) {
-        y--;
+    if (row % 2 != 0) {
+      if (col == 0) {
+        row++;
       } else {
-        x--;
+        col--;
       }
     } else {
-      if (x == Game.BOARDSIZE - 1) {
-        y--;
+      if (col == Game.BOARDSIZE - 1) {
+        row++;
       } else {
-        x++;
+        col++;
       }
     }
 
-    return new int[] { x, y };
+    return new int[] { row, col };
   }
 
   public int getHeadX() {
-    return valuesX[0];
+    return rowCoords[0];
   }
 
   public int getHeadY() {
-    return valuesY[0];
+    return colCoords[0];
   }
 
 }

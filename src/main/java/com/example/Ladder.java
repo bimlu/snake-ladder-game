@@ -2,15 +2,15 @@ package com.example;
 
 public class Ladder {
 
-  public int startX;
-  public int startY;
-  public int endX;
-  public int endY;
+  public int startRowCoord;
+  public int startColCoord;
+  public int endRowCoord;
+  public int endColCoord;
 
   public Ladder(int startX, int startY, int endX, int endY) {
-    this.startX = startX;
-    this.startY = startY;
-    this.endX = endX;
-    this.endY = endY;
+    this.startRowCoord = startX;
+    this.startColCoord = startY;
+    this.endRowCoord = endX;
+    this.endColCoord = endY;
   }
 }
