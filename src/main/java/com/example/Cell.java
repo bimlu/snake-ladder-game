@@ -2,7 +2,10 @@ package com.example;
 
 public enum Cell {
   Empty,
-  Ladder,
-  Snake,
-  Token
+  Token,
+  LadderBottom,
+  LadderTop,
+  SnakeHead,
+  SnakeTail,
+  Blink,
 }

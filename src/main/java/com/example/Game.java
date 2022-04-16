@@ -48,8 +48,8 @@ public class Game {
       in.nextLine();
       dice.roll();
       if (dice.value % 6 == 0) {
-        System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value));
         dice.roll();
+        System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value - 6));
       }
       System.out.println("Dice value: " + String.valueOf(dice.value));
       Thread.sleep(2000);
@@ -90,14 +90,20 @@ public class Game {
 
         Cell cell = board[i][j];
 
-        if (cell == Cell.Snake) {
-          out.append(" x ");
-        } else if (cell == Cell.Ladder) {
-          out.append(" + ");
-        } else if (cell == Cell.Empty) {
+        if (cell == Cell.Empty) {
           out.append(" . ");
         } else if (cell == Cell.Token) {
           out.append(" @ ");
+        } else if (cell == Cell.LadderBottom) {
+          out.append(" A ");
+        } else if (cell == Cell.LadderTop) {
+          out.append(" B ");
+        } else if (cell == Cell.SnakeHead) {
+          out.append(" X ");
+        } else if (cell == Cell.SnakeTail) {
+          out.append(" Y ");
+        } else if (cell == Cell.Blink) {
+          out.append(" * ");
         }
       }
       out.append("|");
@@ -110,7 +116,7 @@ public class Game {
     System.out.print(out.toString());
   }
 
-  private void moveForward() {
+  private void moveForward() throws InterruptedException {
     board[tokenX][tokenY] = this.cell;
 
     if (tokenX % 2 == 0) {
@@ -131,39 +137,74 @@ public class Game {
     board[tokenX][tokenY] = Cell.Token;
 
     printBoard();
+    Thread.sleep(500);
 
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
   }
 
-  private void climbLadder() {
+  private void climbLadder() throws InterruptedException {
     for (Ladder ladder : ladders) {
       if (tokenX == ladder.bottomX && tokenY == ladder.bottomY) {
-        board[tokenX][tokenY] = Cell.Empty;
+        board[tokenX][tokenY] = Cell.Blink;
 
         tokenX = ladder.topX;
         tokenY = ladder.topY;
 
-        board[tokenX][tokenY] = Cell.Ladder;
+        board[tokenX][tokenY] = Cell.Blink;
+
+        printBoard();
+        Thread.sleep(3000);
+
+        board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
+        this.cell = Cell.LadderTop;
+        board[ladder.topX][ladder.topY] = Cell.Token;
+
         return;
       }
     }
   }
 
-  private void climbDownSnake() {
+  private void climbDownSnake() throws InterruptedException {
     for (Snake snake : snakes) {
       if (tokenX == snake.headX && tokenY == snake.headY) {
-        board[tokenX][tokenY] = Cell.Empty;
+        board[tokenX][tokenY] = Cell.Blink;
 
         tokenX = snake.tailX;
         tokenY = snake.tailY;
 
-        board[tokenX][tokenY] = Cell.Snake;
+        board[tokenX][tokenY] = Cell.Blink;
+
+        printBoard();
+        Thread.sleep(3000);
+
+        board[snake.headX][snake.headY] = Cell.SnakeHead;
+        this.cell = Cell.SnakeTail;
+        board[snake.tailX][snake.tailY] = Cell.Token;
+
         return;
       }
+    }
+  }
+
+  private void initializeBoard() {
+    // initialize board with empty cells
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board.length; j++) {
+        board[i][j] = Cell.Empty;
+      }
+    }
+  }
+
+  private void addLaddersToBoard() {
+    for (Ladder ladder : ladders) {
+      board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
+      board[ladder.topX][ladder.topY] = Cell.LadderTop;
+    }
+  }
+
+  private void addSnakesToBoard() {
+    for (Snake snake : snakes) {
+      board[snake.headX][snake.headY] = Cell.SnakeHead;
+      board[snake.tailX][snake.tailY] = Cell.SnakeTail;
     }
   }
 
@@ -180,28 +221,5 @@ public class Game {
     System.out.println("Press Enter to Play...");
     Scanner in = new Scanner(System.in);
     in.nextLine();
-  }
-
-  private void initializeBoard() {
-    // initialize board with empty cells
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board.length; j++) {
-        board[i][j] = Cell.Empty;
-      }
-    }
-  }
-
-  private void addSnakesToBoard() {
-    for (Snake snake : snakes) {
-      board[snake.headX][snake.headY] = Cell.Snake;
-      board[snake.tailX][snake.tailY] = Cell.Snake;
-    }
-  }
-
-  private void addLaddersToBoard() {
-    for (Ladder ladder : ladders) {
-      board[ladder.bottomX][ladder.bottomY] = Cell.Ladder;
-      board[ladder.topX][ladder.topY] = Cell.Ladder;
-    }
   }
 }
