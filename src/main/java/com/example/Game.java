@@ -14,7 +14,6 @@ public class Game {
   private Dice dice;
 
   private Cell cell;
-  private int choice;
 
   public Game() {
 
@@ -33,7 +32,6 @@ public class Game {
     board[tokenX][tokenY] = Cell.Token;
 
     this.cell = Cell.Empty;
-    this.choice = 0;
     this.dice = new Dice();
   }
 
@@ -44,18 +42,27 @@ public class Game {
 
       printBoard();
 
+      System.out.println("1. Roll the dice.\n");
+      System.out.println("2. Show the ladders.\n");
+      System.out.println("3. Show the snakes\n");
+
       Scanner in = new Scanner(System.in);
-      System.out.println("Press Enter to roll the dice...");
-      in.nextLine();
-      dice.roll();
-      if (dice.value % 6 == 0) {
-        dice.roll();
-        System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value - 6));
+      System.out.print("\nPlease select an option: ");
+      int choice = in.nextInt();
+
+      switch (choice) {
+        case 1:
+          rollTheDice();
+          break;
+        case 2:
+          showTheLadders();
+          break;
+        case 3:
+          showTheSnakes();
+          break;
+        default:
+          continue;
       }
-      System.out.println("Dice value: " + String.valueOf(dice.value));
-      Thread.sleep(2000);
-      System.out.println("Moving token forward by " + String.valueOf(dice.value) + " ...");
-      Thread.sleep(2000);
 
       for (int i = 0; i < dice.value; i++) {
         moveForward();
@@ -72,6 +79,30 @@ public class Game {
     }
 
     congrats();
+  }
+
+  private void rollTheDice() throws InterruptedException {
+    dice.roll();
+    if (dice.value % 6 == 0) {
+      dice.roll();
+      System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value - 6));
+    }
+    System.out.println("Dice value: " + String.valueOf(dice.value));
+    Thread.sleep(2000);
+    System.out.println("Moving token forward by " + String.valueOf(dice.value) + " ...");
+    Thread.sleep(2000);
+  }
+
+  private void showTheLadders() throws InterruptedException {
+    for (Ladder ladder : ladders) {
+      blinkAnimation(ladder.bottomX, ladder.bottomY, ladder.topX, ladder.topY, Cell.LadderBottom, Cell.LadderTop);
+    }
+  }
+
+  private void showTheSnakes() throws InterruptedException {
+    for (Snake snake : snakes) {
+      blinkAnimation(snake.headX, snake.headY, snake.tailX, snake.tailY, Cell.SnakeHead, Cell.SnakeTail);
+    }
   }
 
   private void printBoard() {
@@ -148,20 +179,7 @@ public class Game {
         tokenX = ladder.topX;
         tokenY = ladder.topY;
 
-        int timer = 10;
-        while (timer > 0) {
-          board[ladder.bottomX][ladder.bottomY] = Cell.Blink;
-          board[ladder.topX][ladder.topY] = Cell.Blink;
-          printBoard();
-          Thread.sleep(200);
-
-          board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
-          board[ladder.topX][ladder.topY] = Cell.LadderTop;
-          printBoard();
-          Thread.sleep(200);
-
-          timer--;
-        }
+        blinkAnimation(ladder.bottomX, ladder.bottomY, ladder.topX, ladder.topY, Cell.LadderBottom, Cell.LadderTop);
 
         board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
         board[ladder.topX][ladder.topY] = Cell.Token;
@@ -178,20 +196,7 @@ public class Game {
         tokenX = snake.tailX;
         tokenY = snake.tailY;
 
-        int timer = 10;
-        while (timer > 0) {
-          board[snake.headX][snake.headY] = Cell.Blink;
-          board[snake.tailX][snake.tailY] = Cell.Blink;
-          printBoard();
-          Thread.sleep(200);
-
-          board[snake.headX][snake.headY] = Cell.SnakeHead;
-          board[snake.tailX][snake.tailY] = Cell.SnakeTail;
-          printBoard();
-          Thread.sleep(200);
-
-          timer--;
-        }
+        blinkAnimation(snake.headX, snake.headY, snake.tailX, snake.tailY, Cell.SnakeHead, Cell.SnakeTail);
 
         board[snake.headX][snake.headY] = Cell.SnakeHead;
         board[snake.tailX][snake.tailY] = Cell.Token;
@@ -199,6 +204,24 @@ public class Game {
 
         return;
       }
+    }
+  }
+
+  private void blinkAnimation(int ax, int ay, int bx, int by, Cell c1, Cell c2) throws InterruptedException {
+    int timer = 6;
+
+    while (timer > 0) {
+      board[ax][ay] = Cell.Blink;
+      board[bx][by] = Cell.Blink;
+      printBoard();
+      Thread.sleep(200);
+
+      board[ax][ay] = c1;
+      board[bx][by] = c2;
+      printBoard();
+      Thread.sleep(200);
+
+      timer--;
     }
   }
 
