@@ -15,11 +15,27 @@ public class Ladder {
   }
 
   public static Ladder[] generateLadders() {
-    Ladder[] ladders = new Ladder[2];
+    // from wikipedia
+    int[] ladderBottoms = new int[] { 12, 51, 57, 76, 78 };
+    int[] ladderTops = new int[] { 20, 78, 84, 92, 94 };
 
-    ladders[0] = new Ladder(2, 2, 4, 5);
-    ladders[1] = new Ladder(4, 1, 6, 6);
+    Ladder[] ladders = new Ladder[ladderBottoms.length];
+
+    for (int i = 0; i < ladders.length; i++) {
+      ladders[i] = createLadder(ladderBottoms[i], ladderTops[i]);
+    }
 
     return ladders;
+  }
+
+  private static Ladder createLadder(int ladderBottom, int ladderTop) {
+    int n = Game.BOARDSIZE * Game.BOARDSIZE;
+    // by observation
+    int bottomX = (n - ladderBottom) / 10;
+    int bottomY = (n - ladderBottom) % 10;
+    int topX = (n - ladderTop) / 10;
+    int topY = (n - ladderTop) % 10;
+
+    return new Ladder(bottomX, bottomY, topX, topY);
   }
 }
