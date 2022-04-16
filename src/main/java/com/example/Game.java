@@ -37,8 +37,6 @@ public class Game {
       System.out.print("\033[H\033[2J");
       System.out.flush();
 
-      dice.clear();
-
       printBoard();
 
       dice.roll();
@@ -48,10 +46,9 @@ public class Game {
       }
 
       for (int i = 0; i < dice.value; i++) {
-        board[tokenX][tokenY] = Cell.Empty;
         moveForward();
-        board[tokenX][tokenY] = Cell.Token;
       }
+      dice.clear();
 
       climbLadder();
 
@@ -87,6 +84,8 @@ public class Game {
   }
 
   private void moveForward() {
+    board[tokenX][tokenY] = Cell.Empty;
+
     if (tokenX % 2 == 0) {
       if (tokenY == 0) {
         tokenX--;
@@ -100,14 +99,18 @@ public class Game {
         tokenY++;
       }
     }
+
+    board[tokenX][tokenY] = Cell.Token;
   }
 
   private void climbLadder() {
     for (Ladder ladder : ladders) {
       if (tokenX == ladder.bottomX && tokenY == ladder.bottomY) {
         board[tokenX][tokenY] = Cell.Empty;
+
         tokenX = ladder.topX;
         tokenY = ladder.topY;
+
         board[tokenX][tokenY] = Cell.Ladder;
         return;
       }
@@ -118,8 +121,10 @@ public class Game {
     for (Snake snake : snakes) {
       if (tokenX == snake.headX && tokenY == snake.headY) {
         board[tokenX][tokenY] = Cell.Empty;
+
         tokenX = snake.tailX;
         tokenY = snake.tailY;
+
         board[tokenX][tokenY] = Cell.Snake;
         return;
       }
