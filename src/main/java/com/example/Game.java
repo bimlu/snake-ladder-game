@@ -14,6 +14,7 @@ public class Game {
   private Dice dice;
 
   private Cell cell;
+  private int choice;
 
   public Game() {
 
@@ -32,8 +33,8 @@ public class Game {
     board[tokenX][tokenY] = Cell.Token;
 
     this.cell = Cell.Empty;
-
-    dice = new Dice();
+    this.choice = 0;
+    this.dice = new Dice();
   }
 
   public void play() throws InterruptedException {
