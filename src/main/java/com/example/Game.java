@@ -1,5 +1,7 @@
 package com.example;
 
+import java.util.Scanner;
+
 public class Game {
   public static final int BOARDSIZE = 10;
 
@@ -10,6 +12,8 @@ public class Game {
   private Ladder[] ladders;
   private Snake[] snakes;
   private Dice dice;
+
+  private Cell cell;
 
   public Game() {
 
@@ -27,23 +31,30 @@ public class Game {
     tokenY = 0;
     board[tokenX][tokenY] = Cell.Token;
 
+    this.cell = Cell.Empty;
+
     dice = new Dice();
   }
 
-  public void play() {
+  public void play() throws InterruptedException {
     welcome();
 
     while (true) {
-      System.out.print("\033[H\033[2J");
-      System.out.flush();
 
       printBoard();
 
+      Scanner in = new Scanner(System.in);
+      System.out.println("Press Enter to roll the dice...");
+      in.nextLine();
       dice.roll();
-
-      if (dice.value == 6) {
+      if (dice.value % 6 == 0) {
+        System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value));
         dice.roll();
       }
+      System.out.println("Dice value: " + String.valueOf(dice.value));
+      Thread.sleep(2000);
+      System.out.println("Moving token forward by " + String.valueOf(dice.value) + " ...");
+      Thread.sleep(2000);
 
       for (int i = 0; i < dice.value; i++) {
         moveForward();
@@ -63,28 +74,40 @@ public class Game {
   }
 
   private void printBoard() {
+    StringBuilder out = new StringBuilder();
+
+    out.append("\033[H\033[2J"); // clears the console
+    out.append("--------------------------------\n");
+
     for (int i = 0; i < board.length; i++) {
+      out.append("|");
+
       for (int j = 0; j < board.length; j++) {
 
         Cell cell = board[i][j];
 
         if (cell == Cell.Snake) {
-          System.out.print(" x ");
+          out.append(" x ");
         } else if (cell == Cell.Ladder) {
-          System.out.print(" + ");
+          out.append(" + ");
         } else if (cell == Cell.Empty) {
-          System.out.print(" . ");
+          out.append(" . ");
         } else if (cell == Cell.Token) {
-          System.out.print(" @ ");
+          out.append(" @ ");
         }
       }
-      System.out.println();
+      out.append("|");
+      out.append("\n");
     }
-    System.out.println();
+
+    out.append("--------------------------------\n");
+    out.append("\n");
+
+    System.out.print(out.toString());
   }
 
   private void moveForward() {
-    board[tokenX][tokenY] = Cell.Empty;
+    board[tokenX][tokenY] = this.cell;
 
     if (tokenX % 2 == 0) {
       if (tokenY == 0) {
@@ -100,7 +123,16 @@ public class Game {
       }
     }
 
+    this.cell = board[tokenX][tokenY];
     board[tokenX][tokenY] = Cell.Token;
+
+    printBoard();
+
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   private void climbLadder() {
@@ -140,7 +172,10 @@ public class Game {
   }
 
   public void welcome() {
-    System.out.println("*** Welcome to Snake and Ladder Game ***\n");
+    System.out.println("\n\n*** Welcome to Snake and Ladder Game ***\n\n");
+    System.out.println("Press Enter to Play...");
+    Scanner in = new Scanner(System.in);
+    in.nextLine();
   }
 
   private void initializeBoard() {
