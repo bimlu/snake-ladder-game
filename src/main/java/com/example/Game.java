@@ -14,26 +14,13 @@ public class Game {
   public Game() {
 
     board = new Cell[BOARDSIZE][BOARDSIZE];
-    // initialize board with empty cells
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board.length; j++) {
-        board[i][j] = Cell.Empty;
-      }
-    }
+    initializeBoard();
 
-    ladders = generateLadders();
-    // add ladders to board
-    for (Ladder ladder : ladders) {
-      board[ladder.bottomX][ladder.bottomY] = Cell.Ladder;
-      board[ladder.topX][ladder.topY] = Cell.Ladder;
-    }
+    ladders = Ladder.generateLadders();
+    addLaddersToBoard();
 
-    snakes = generateSnakes();
-    // add snakes to board
-    for (Snake snake : snakes) {
-      board[snake.headX][snake.headY] = Cell.Snake;
-      board[snake.tailX][snake.tailY] = Cell.Snake;
-    }
+    snakes = Snake.generateSnakes();
+    addSnakesToBoard();
 
     // add token to board
     tokenX = BOARDSIZE - 1;
@@ -41,45 +28,6 @@ public class Game {
     board[tokenX][tokenY] = Cell.Token;
 
     dice = new Dice();
-  }
-
-  private Snake[] generateSnakes() {
-    Snake[] snakes = new Snake[2];
-
-    snakes[0] = new Snake(6, 2, 4, 4);
-    snakes[1] = new Snake(6, 1, 3, 6);
-
-    return snakes;
-  }
-
-  private Ladder[] generateLadders() {
-    Ladder[] ladders = new Ladder[2];
-
-    ladders[0] = new Ladder(2, 2, 4, 5);
-    ladders[1] = new Ladder(4, 1, 6, 6);
-
-    return ladders;
-  }
-
-  private void printBoard() {
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board.length; j++) {
-
-        Cell cell = board[i][j];
-
-        if (cell == Cell.Snake) {
-          System.out.print(" x ");
-        } else if (cell == Cell.Ladder) {
-          System.out.print(" + ");
-        } else if (cell == Cell.Empty) {
-          System.out.print(" . ");
-        } else if (cell == Cell.Token) {
-          System.out.print(" @ ");
-        }
-      }
-      System.out.println();
-    }
-    System.out.println();
   }
 
   public void play() {
@@ -115,6 +63,27 @@ public class Game {
     }
 
     congrats();
+  }
+
+  private void printBoard() {
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board.length; j++) {
+
+        Cell cell = board[i][j];
+
+        if (cell == Cell.Snake) {
+          System.out.print(" x ");
+        } else if (cell == Cell.Ladder) {
+          System.out.print(" + ");
+        } else if (cell == Cell.Empty) {
+          System.out.print(" . ");
+        } else if (cell == Cell.Token) {
+          System.out.print(" @ ");
+        }
+      }
+      System.out.println();
+    }
+    System.out.println();
   }
 
   private void moveForward() {
@@ -167,5 +136,28 @@ public class Game {
 
   public void welcome() {
     System.out.println("*** Welcome to Snake and Ladder Game ***\n");
+  }
+
+  private void initializeBoard() {
+    // initialize board with empty cells
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board.length; j++) {
+        board[i][j] = Cell.Empty;
+      }
+    }
+  }
+
+  private void addSnakesToBoard() {
+    for (Snake snake : snakes) {
+      board[snake.headX][snake.headY] = Cell.Snake;
+      board[snake.tailX][snake.tailY] = Cell.Snake;
+    }
+  }
+
+  private void addLaddersToBoard() {
+    for (Ladder ladder : ladders) {
+      board[ladder.bottomX][ladder.bottomY] = Cell.Ladder;
+      board[ladder.topX][ladder.topY] = Cell.Ladder;
+    }
   }
 }

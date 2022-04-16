@@ -13,4 +13,13 @@ public class Ladder {
     this.topX = topX;
     this.topY = topY;
   }
+
+  public static Ladder[] generateLadders() {
+    Ladder[] ladders = new Ladder[2];
+
+    ladders[0] = new Ladder(2, 2, 4, 5);
+    ladders[1] = new Ladder(4, 1, 6, 6);
+
+    return ladders;
+  }
 }
