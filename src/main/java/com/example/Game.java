@@ -77,7 +77,11 @@ public class Game {
     StringBuilder out = new StringBuilder();
 
     out.append("\033[H\033[2J"); // clears the console
-    out.append("--------------------------------\n");
+    out.append("     +--------------------+     \n");
+    out.append("     |  SNAKE AND LADDER  |     \n");
+    out.append("     +--------------------+     \n");
+    out.append("\n");
+    out.append("+------------------------------+\n");
 
     for (int i = 0; i < board.length; i++) {
       out.append("|");
@@ -100,7 +104,7 @@ public class Game {
       out.append("\n");
     }
 
-    out.append("--------------------------------\n");
+    out.append("+------------------------------+\n");
     out.append("\n");
 
     System.out.print(out.toString());
