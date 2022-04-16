@@ -144,19 +144,27 @@ public class Game {
   private void climbLadder() throws InterruptedException {
     for (Ladder ladder : ladders) {
       if (tokenX == ladder.bottomX && tokenY == ladder.bottomY) {
-        board[tokenX][tokenY] = Cell.Blink;
-
         tokenX = ladder.topX;
         tokenY = ladder.topY;
 
-        board[tokenX][tokenY] = Cell.Blink;
+        int timer = 10;
+        while (timer > 0) {
+          board[ladder.bottomX][ladder.bottomY] = Cell.Blink;
+          board[ladder.topX][ladder.topY] = Cell.Blink;
+          printBoard();
+          Thread.sleep(200);
 
-        printBoard();
-        Thread.sleep(3000);
+          board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
+          board[ladder.topX][ladder.topY] = Cell.LadderTop;
+          printBoard();
+          Thread.sleep(200);
+
+          timer--;
+        }
 
         board[ladder.bottomX][ladder.bottomY] = Cell.LadderBottom;
-        this.cell = Cell.LadderTop;
         board[ladder.topX][ladder.topY] = Cell.Token;
+        this.cell = Cell.LadderTop;
 
         return;
       }
@@ -166,19 +174,27 @@ public class Game {
   private void climbDownSnake() throws InterruptedException {
     for (Snake snake : snakes) {
       if (tokenX == snake.headX && tokenY == snake.headY) {
-        board[tokenX][tokenY] = Cell.Blink;
-
         tokenX = snake.tailX;
         tokenY = snake.tailY;
 
-        board[tokenX][tokenY] = Cell.Blink;
+        int timer = 10;
+        while (timer > 0) {
+          board[snake.headX][snake.headY] = Cell.Blink;
+          board[snake.tailX][snake.tailY] = Cell.Blink;
+          printBoard();
+          Thread.sleep(200);
 
-        printBoard();
-        Thread.sleep(3000);
+          board[snake.headX][snake.headY] = Cell.SnakeHead;
+          board[snake.tailX][snake.tailY] = Cell.SnakeTail;
+          printBoard();
+          Thread.sleep(200);
+
+          timer--;
+        }
 
         board[snake.headX][snake.headY] = Cell.SnakeHead;
-        this.cell = Cell.SnakeTail;
         board[snake.tailX][snake.tailY] = Cell.Token;
+        this.cell = Cell.SnakeTail;
 
         return;
       }
