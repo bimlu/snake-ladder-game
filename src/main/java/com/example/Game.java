@@ -39,7 +39,6 @@ public class Game {
     welcome();
 
     while (true) {
-
       printBoard();
 
       System.out.println("1. Roll the dice.\n");
@@ -56,17 +55,22 @@ public class Game {
           break;
         case 2:
           showTheLadders();
-          break;
+          continue;
         case 3:
           showTheSnakes();
-          break;
+          continue;
         default:
           continue;
+      }
+
+      if (tokenX == 0 && (dice.value > tokenY)) {
+        continue;
       }
 
       for (int i = 0; i < dice.value; i++) {
         moveForward();
       }
+
       dice.clear();
 
       climbLadder();
