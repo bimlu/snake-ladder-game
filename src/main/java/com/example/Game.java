@@ -83,14 +83,28 @@ public class Game {
 
   private void rollTheDice() throws InterruptedException {
     dice.roll();
+    System.out.print("\n>>> ");
+    System.out.print("Rolling dice...");
+    clearCurrentLineAndWait(2000, 15);
+
     if (dice.value % 6 == 0) {
       dice.roll();
-      System.out.println("You got 6. Rolling again..." + String.valueOf(dice.value - 6));
+      System.out.print("You got 6. Rolling again...");
+      clearCurrentLineAndWait(2000, 27);
     }
-    System.out.println("Dice value: " + String.valueOf(dice.value));
+
+    System.out.print("Got " + String.valueOf(dice.value));
+    clearCurrentLineAndWait(2000, 5);
+
+    System.out.print("Moving token forward by " + String.valueOf(dice.value) + " ...");
     Thread.sleep(2000);
-    System.out.println("Moving token forward by " + String.valueOf(dice.value) + " ...");
-    Thread.sleep(2000);
+  }
+
+  private void clearCurrentLineAndWait(int milliSec, int charCount) throws InterruptedException {
+    Thread.sleep(milliSec);
+    for (int i = 0; i < charCount; i++) {
+      System.out.print("\b \b");
+    }
   }
 
   private void showTheLadders() throws InterruptedException {
@@ -257,8 +271,8 @@ public class Game {
   }
 
   public void welcome() {
-    System.out.println("\n\n*** Welcome to Snake and Ladder Game ***\n\n");
-    System.out.println("Press Enter to Play...");
+    System.out.println("\n\n*** Welcome to snake and ladder game ***\n\n");
+    System.out.println("Press enter to play...");
     Scanner in = new Scanner(System.in);
     in.nextLine();
   }

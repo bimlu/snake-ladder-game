@@ -30,10 +30,10 @@ public class Snake {
   private static Snake createSnake(int snakeHead, int snakeTail) {
     int n = Game.BOARDSIZE * Game.BOARDSIZE;
     // by observation
-    int headX = (n - snakeHead) / 10;
-    int headY = (n - snakeHead) % 10;
-    int tailX = (n - snakeTail) / 10;
-    int tailY = (n - snakeTail) % 10;
+    int headX = (n - snakeHead) / Game.BOARDSIZE;
+    int headY = (n - snakeHead) % Game.BOARDSIZE;
+    int tailX = (n - snakeTail) / Game.BOARDSIZE;
+    int tailY = (n - snakeTail) % Game.BOARDSIZE;
 
     return new Snake(headX, headY, tailX, tailY);
   }

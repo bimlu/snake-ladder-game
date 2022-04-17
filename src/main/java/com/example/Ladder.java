@@ -31,10 +31,10 @@ public class Ladder {
   private static Ladder createLadder(int ladderBottom, int ladderTop) {
     int n = Game.BOARDSIZE * Game.BOARDSIZE;
     // by observation
-    int bottomX = (n - ladderBottom) / 10;
-    int bottomY = (n - ladderBottom) % 10;
-    int topX = (n - ladderTop) / 10;
-    int topY = (n - ladderTop) % 10;
+    int bottomX = (n - ladderBottom) / Game.BOARDSIZE;
+    int bottomY = (n - ladderBottom) % Game.BOARDSIZE;
+    int topX = (n - ladderTop) / Game.BOARDSIZE;
+    int topY = (n - ladderTop) % Game.BOARDSIZE;
 
     return new Ladder(bottomX, bottomY, topX, topY);
   }
